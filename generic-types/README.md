@@ -1,0 +1,4 @@
+- Write a function to add two numbers stored within Box<T> objects
+  - Function name: sum_boxes
+  - Input: two Box<T> objects, where T is a numeric value
+  - Output: Box<T> containing the sum of the two input values
