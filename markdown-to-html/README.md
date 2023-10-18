@@ -5,7 +5,7 @@ This project is for learning purposes and sums up most of Rust basics.
 
 ## How It Works
 
-There are four main stages:
+There are four stages:
 1. **Input from the user**: it's actually pretty simple, we use the terminal to ask the user for the path to the file, validate the file exists and send it down the line.
 2. **Find patterns with RegEx**: basically, we write a lot of regular expressions that know to identify markdown syntax (e.g. \*bold text\*)
 3. **Transform text to elements**: in short, we have a cool enum that represents each element (e.g. link, image, bold text, etc.) to which we send our text split to relevant parts (for example, in links, there's the URL part and the text part). Now that we have all the parts, we can easily create an HTML element with a simple template string.
