@@ -1,19 +1,9 @@
 use regex::Regex;
-use std::env::current_dir;
 use std::fs;
 use std::io;
 use std::usize;
 
 fn main() -> io::Result<()> {
-    println!("Current dir: {:?}", current_dir());
-    println!(
-        "Current dir files, {:?}",
-        fs::read_dir(current_dir().unwrap())
-            .unwrap()
-            .map(|entry| entry.unwrap().file_name().to_str().unwrap().to_owned())
-            .collect::<Vec<String>>()
-    );
-
     let mut input = String::new();
     let stdin = io::stdin();
 
@@ -21,7 +11,6 @@ fn main() -> io::Result<()> {
     stdin.read_line(&mut input)?;
 
     let content_result = fs::read_to_string(&input.trim());
-    println!("File: {input}");
     match content_result {
         Ok(result) => parse_file_to_markdown(&result),
         Err(err) => println!("{err}"),
