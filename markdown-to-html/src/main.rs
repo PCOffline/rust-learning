@@ -79,7 +79,8 @@ impl<'a> Element<'a> {
         let underline_regex = Regex::new(&gen_regex_str_for_wrap("_")).unwrap();
 
         let unordered_list_regex = Regex::new(r"^\s*-\s+.+$").unwrap();
-        let ordered_list_regex = Regex::new(r"^\s*\d\.\s+.+$").unwrap();
+        let ordered_list_regex = Regex::new(r"^\s*\d\.\s.+$").unwrap();
+        let checkbox_regex = Regex::new(r"^\s*\[[xX]?\]\s(.+)$").unwrap();
         let link_regex = Regex::new(r"\[(?<text>.+)\]\((?<url>.+)\)").unwrap();
         let code_regex = Regex::new(&gen_regex_str_for_wrap("`")).unwrap();
         let code_block_regex = Regex::new(&gen_regex_str_for_wrap(r"\n```\n")).unwrap();
@@ -128,6 +129,11 @@ impl<'a> Element<'a> {
             return Some(Element::Code(get_trimmed_text_from_both_sides(text, "`")));
         } else if code_block_regex.is_match(text) {
             return Some(Element::Code(get_trimmed_text_from_both_sides(text, "```")));
+        } else if checkbox_regex.is_match(text) {
+            let checked: bool = text.trim().chars().nth(1).unwrap().to_string().to_lowercase() == "x";
+            let checkbox_text = checkbox_regex.captures(text).unwrap().get(1).unwrap().as_str();
+
+            return Some(Element::Checkbox(checked, checkbox_text))
         } else if link_regex.is_match(text) {
             let captures = link_regex.captures(text).unwrap();
             return Some(Element::Link(
