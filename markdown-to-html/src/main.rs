@@ -82,6 +82,7 @@ impl<'a> Element<'a> {
         let ordered_list_regex = Regex::new(r"^\s*\d\.\s.+$").unwrap();
         let checkbox_regex = Regex::new(r"^\s*\[[xX]?\]\s(.+)$").unwrap();
         let link_regex = Regex::new(r"\[(?<text>.+)\]\((?<url>.+)\)").unwrap();
+        let image_regex = Regex::new(r"\![?<alt>.+\]\((?<url>.+)\)").unwrap();
         let code_regex = Regex::new(&gen_regex_str_for_wrap("`")).unwrap();
         let code_block_regex = Regex::new(&gen_regex_str_for_wrap(r"\n```\n")).unwrap();
 
@@ -138,6 +139,12 @@ impl<'a> Element<'a> {
             let captures = link_regex.captures(text).unwrap();
             return Some(Element::Link(
                 &captures.name("text").unwrap().as_str(),
+                &captures.name("url").unwrap().as_str(),
+            ));
+        } else if image_regex.is_match(text) {
+            let captures = image_regex.captures(text).unwrap();
+            return Some(Element::Image(
+                &captures.name("alt").unwrap().as_str(),
                 &captures.name("url").unwrap().as_str(),
             ));
         } else if text.lines().all(|line| unordered_list_regex.is_match(line)) {
