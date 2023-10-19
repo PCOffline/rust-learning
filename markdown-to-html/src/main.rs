@@ -1,3 +1,4 @@
+use regex::escape;
 use regex::Regex;
 use std::fs;
 use std::io;
@@ -60,11 +61,11 @@ impl<'a> Element<'a> {
 
     fn from(text: &str) -> Option<Element> {
         fn gen_regex_str_for_wrap(template: &str) -> String {
-            template.to_owned() + r"[^" + template + "]" + template
+            escape(template) + r"[^" + template + "]?.*" + &escape(template)
         }
 
         fn gen_regex_str_for_prefix(template: &str) -> String {
-            "^".to_owned() + template + "[^" + template + "]?.+$"
+            "^".to_owned() + &escape(template) + "[^" + template + "]?.+$"
         }
 
         let title_regex = Regex::new(&gen_regex_str_for_prefix("#")).unwrap();
@@ -72,14 +73,14 @@ impl<'a> Element<'a> {
         let header_regex = Regex::new(&gen_regex_str_for_prefix("###")).unwrap();
         let subheader_regex = Regex::new(&gen_regex_str_for_prefix("####")).unwrap();
 
-        let italic_regex = Regex::new(&gen_regex_str_for_wrap(r"\*")).unwrap();
-        let bold_regex = Regex::new(&gen_regex_str_for_wrap(r"\*\*")).unwrap();
+        let italic_regex = Regex::new(&gen_regex_str_for_wrap("*")).unwrap();
+        let bold_regex = Regex::new(&gen_regex_str_for_wrap("**")).unwrap();
         let strikethrough_regex = Regex::new(&gen_regex_str_for_wrap("~")).unwrap();
         let underline_regex = Regex::new(&gen_regex_str_for_wrap("_")).unwrap();
 
         let unordered_list_regex = Regex::new(r"^\s*-\s+.+$").unwrap();
         let ordered_list_regex = Regex::new(r"^\s*\d\.\s+.+$").unwrap();
-        let link_regex = Regex::new(r"\[(?<text>[^\[\]()])+\]\((?<url>[^()]+)\)").unwrap();
+        let link_regex = Regex::new(r"\[(?<text>.+)\]\((?<url>.+)\)").unwrap();
         let code_regex = Regex::new(&gen_regex_str_for_wrap("`")).unwrap();
         let code_block_regex = Regex::new(&gen_regex_str_for_wrap(r"\n```\n")).unwrap();
 
@@ -111,10 +112,10 @@ impl<'a> Element<'a> {
             return Some(Element::Header(get_trimmed_text(text, "### ")));
         } else if subheader_regex.is_match(text) {
             return Some(Element::Subheader(get_trimmed_text(text, "#### ")));
-        } else if italic_regex.is_match(text) {
-            return Some(Element::Italic(get_trimmed_text_from_both_sides(text, "*")));
         } else if bold_regex.is_match(text) {
             return Some(Element::Bold(get_trimmed_text_from_both_sides(text, "**")));
+        } else if italic_regex.is_match(text) {
+            return Some(Element::Italic(get_trimmed_text_from_both_sides(text, "*")));
         } else if strikethrough_regex.is_match(text) {
             return Some(Element::Strikethrough(get_trimmed_text_from_both_sides(
                 text, "~",
