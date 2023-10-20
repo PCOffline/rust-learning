@@ -16,7 +16,7 @@ fn main() -> io::Result<()> {
     Ok(())
 }
 
-fn write_html_file<'a>(file_name: &str, html: &str) -> io::Result<()> {
+fn write_html_file(file_name: &str, html: &str) -> io::Result<()> {
     let html_tree = "<html><head><title>Markdown to HTML</title></head><body>".to_owned()
         + html
         + "</body></html>";
