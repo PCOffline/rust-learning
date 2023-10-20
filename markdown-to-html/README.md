@@ -14,3 +14,4 @@ There are four stages:
 ## Challenges to Tackle
 1. The regular expressions are a bit tricky to get right from the first time, especially if you're not experienced with writing them.
 2. There are a bunch of edge-cases and fine-tuning, for example combinations of bold, italic, strikethrough, underline, lists, etc.
+3. As a bonus, you can add some formatting, make line breaks work, etc.
