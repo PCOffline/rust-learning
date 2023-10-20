@@ -18,6 +18,7 @@ enum Element<'a> {
     UnorderedList(Vec<&'a str>),
     OrderedList(Vec<&'a str>),
     Checkbox(bool, &'a str),
+    Linebreak,
 }
 
 impl<'a> Element<'a> {
@@ -52,6 +53,7 @@ impl<'a> Element<'a> {
             }
             Self::Link(text, url) => format!("<a href=\"{url}\">{text}</a>"),
             Self::Image(alt, url) => format!("<img src=\"{url}\" alt=\"{alt}\">"),
+            Self::Linebreak => "<br />".to_owned()
         }
     }
 }
@@ -94,6 +96,7 @@ pub fn markdown_to_html(text: &str) -> String {
     let image_regex = gen_regex(r"\!\[(?<alt>.*)\]\((?<url>.+)\)");
     let code_regex = gen_wrap_regex("`");
     let code_block_regex = gen_regex(r"^\s*```\w*\n(?<text>(.+\n*)+)\n```\s*$");
+    let line_break_regex = gen_regex(r"\n\n");
 
     let text = title_regex.replace_all(text, |captures: &Captures| Element::Title(captures.name("text").unwrap().as_str()).to_html());
     let text = subtitle_regex.replace_all(&text, |captures: &Captures| Element::Subtitle(captures.name("text").unwrap().as_str()).to_html());
@@ -110,6 +113,7 @@ pub fn markdown_to_html(text: &str) -> String {
     let text = checkbox_regex.replace_all(&text, |captures: &Captures| Element::Checkbox(captures.name("checkmark").unwrap().as_str() != "", captures.name("text").unwrap().as_str()).to_html());
     let text = unordered_list_regex.replace_all(&text, |captures: &Captures| Element::UnorderedList(list_str_to_vec(captures.get(0).unwrap().as_str())).to_html());
     let text = ordered_list_regex.replace_all(&text, |captures: &Captures| Element::OrderedList(list_str_to_vec(captures.get(0).unwrap().as_str())).to_html());
+    let text = line_break_regex.replace_all(&text, Element::Linebreak.to_html());
 
     text.to_string()
 }
