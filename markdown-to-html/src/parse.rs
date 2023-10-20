@@ -56,7 +56,7 @@ impl<'a> Element<'a> {
     }
 }
 
-pub fn parse_markdown_to_html(text: &str) -> String {
+pub fn markdown_to_html(text: &str) -> String {
     fn gen_regex(pattern: &str) -> Regex {
         RegexBuilder::new(pattern)
             .multi_line(true)
